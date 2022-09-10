@@ -201,7 +201,7 @@ dependencies = [
  "anyhow",
  "cosmwasm-std",
  "cosmwasm-storage",
- "cw-storage-plus 0.13.2",
+ "cw-storage-plus",
  "cw-utils",
  "derivative",
  "itertools",
@@ -216,17 +216,6 @@ name = "cw-storage-plus"
 version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9336ecef1e19d56cf6e3e932475fc6a3dee35eec5a386e07917a1d1ba6bb0e35"
-dependencies = [
- "cosmwasm-std",
- "schemars",
- "serde",
-]
-
-[[package]]
-name = "cw-storage-plus"
-version = "0.14.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c8b264257c4f44c49b7ce09377af63aa040768ecd3fd7bdd2d48a09323a1e90"
 dependencies = [
  "cosmwasm-std",
  "schemars",
@@ -252,7 +241,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "993df11574f29574dd443eb0c189484bb91bc0638b6de3e32ab7f9319c92122d"
 dependencies = [
  "cosmwasm-std",
- "cw-storage-plus 0.13.2",
+ "cw-storage-plus",
  "schemars",
  "serde",
 ]
@@ -306,10 +295,9 @@ dependencies = [
  "cosmwasm-std",
  "cosmwasm-storage",
  "cw-multi-test",
- "cw-storage-plus 0.13.2",
+ "cw-storage-plus",
  "cw2",
- "nois-proxy",
- "nois-toolbox",
+ "nois",
  "schemars",
  "serde",
  "thiserror",
@@ -482,35 +470,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "349d5a591cd28b49e1d1037471617a32ddcda5731b99419008085f72d5a53836"
 
 [[package]]
-name = "nois-protocol"
-version = "0.3.0"
+name = "nois"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0c507dc4ef3492458522efcf1b084e03720b58f593ddb4f3b87b96f8d7dfb7d1"
 dependencies = [
  "cosmwasm-schema",
  "cosmwasm-std",
  "hex",
- "schemars",
- "serde",
- "thiserror",
-]
-
-[[package]]
-name = "nois-proxy"
-version = "0.3.0"
-dependencies = [
- "cosmwasm-schema",
- "cosmwasm-std",
- "cw-storage-plus 0.14.0",
- "nois-protocol",
- "schemars",
- "serde",
- "thiserror",
-]
-
-[[package]]
-name = "nois-toolbox"
-version = "0.3.0"
-dependencies = [
- "cosmwasm-std",
  "rand",
  "rand_xoshiro",
  "schemars",
