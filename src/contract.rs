@@ -8,7 +8,7 @@ use cw2::set_contract_version;
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 use crate::state::{DOUBLE_DICE_OUTCOME, NOIS_PROXY};
-use nois::{Data, NoisCallbackMsg};
+use nois::{ints_in_range, Data, NoisCallbackMsg};
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:double-dice-roll";
@@ -77,14 +77,7 @@ pub fn execute_receive(
     let randomness: [u8; 32] = randomness
         .to_array()
         .map_err(|_| ContractError::InvalidRandomness)?;
-
-    let dice_outcome_1 = randomness[0] % 6 + 1;
-    let dice_outcome_2 = randomness[1] % 6 + 1;
-    // randomness[0] is a hex between 0 - 15
-    // which is not a multiple of 6 so this a good dice.
-    // So should be more lik [0..16]
-    //but whatever this is just a demo
-
+    let [dice_outcome_1, dice_outcome_2] = ints_in_range(randomness, 1..=6);
     let double_dice_outcome = dice_outcome_1 + dice_outcome_2;
 
     DOUBLE_DICE_OUTCOME.save(deps.storage, &callback_id, &double_dice_outcome)?;
