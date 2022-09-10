@@ -40,9 +40,8 @@ optimize = """docker run --rm -v "$(pwd)":/code \
 """
 
 [dependencies]
-nois-proxy = { path = "../nois-contracts/contracts/nois-proxy", features = ["library"]}
-nois-toolbox = { path = "../nois-contracts/packages/nois-toolbox" }
-#nois-proxy = { path = "../../contracts/nois-proxy", features = ["library"]}
+nois = "0.4.0"
+
 cosmwasm-std = "1.0.0"
 cosmwasm-storage = "1.0.0"
 cw-storage-plus = "0.13.2"

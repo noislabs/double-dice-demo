@@ -3,7 +3,7 @@ use cosmwasm_std::{entry_point, Order};
 use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, WasmMsg};
 use cw2::set_contract_version;
 
-use nois_proxy::{Data, NoisCallbackMsg};
+use nois::{Data, NoisCallbackMsg};
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 use crate::state::{NOIS_PROXY, DOUBLE_DICE_OUTCOME};
@@ -58,7 +58,7 @@ pub fn execute_roll_dice(
 
     let res = Response::new().add_message(WasmMsg::Execute {
         contract_addr: nois_proxy.into(),
-        msg: to_binary(&nois_proxy::ExecuteMsg::GetNextRandomness {
+        msg: to_binary(&nois::ProxyExecuteMsg::GetNextRandomness {
             callback_id: Some(job_id),
         })?,
         funds: vec![],
