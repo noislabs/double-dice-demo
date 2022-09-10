@@ -22,8 +22,6 @@ pub enum ExecuteMsg {
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
     // GetCount returns the current count as a json-encoded number
-
-    
-    QueryOutcome {job_id: String },
-    GetHistoryOfRounds{},
+    QueryOutcome { job_id: String },
+    GetHistoryOfRounds {},
 }

@@ -1,12 +1,14 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::{entry_point, Order};
-use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, WasmMsg};
+use cosmwasm_std::{
+    to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, WasmMsg,
+};
 use cw2::set_contract_version;
 
-use nois::{Data, NoisCallbackMsg};
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{NOIS_PROXY, DOUBLE_DICE_OUTCOME};
+use crate::state::{DOUBLE_DICE_OUTCOME, NOIS_PROXY};
+use nois::{Data, NoisCallbackMsg};
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:double-dice-roll";
@@ -25,7 +27,6 @@ pub fn instantiate(
         .map_err(|_| ContractError::InvalidProxyAddress)?;
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
     NOIS_PROXY.save(deps.storage, &nois_proxy_addr)?;
-    
 
     Ok(Response::new()
         .add_attribute("method", "instantiate")
@@ -77,10 +78,10 @@ pub fn execute_receive(
         .to_array()
         .map_err(|_| ContractError::InvalidRandomness)?;
 
-    let dice_outcome_1= randomness[0] % 6 + 1;  
-    let dice_outcome_2= randomness[1] % 6 + 1;
+    let dice_outcome_1 = randomness[0] % 6 + 1;
+    let dice_outcome_2 = randomness[1] % 6 + 1;
     // randomness[0] is a hex between 0 - 15
-    // which is not a multiple of 6 so this a good dice. 
+    // which is not a multiple of 6 so this a good dice.
     // So should be more lik [0..16]
     //but whatever this is just a demo
 
@@ -94,9 +95,8 @@ pub fn execute_receive(
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
-        QueryMsg::GetHistoryOfRounds{} => to_binary(&query_history(deps)?),
+        QueryMsg::GetHistoryOfRounds {} => to_binary(&query_history(deps)?),
         QueryMsg::QueryOutcome { job_id } => to_binary(&query_outcome(deps, job_id)?),
-
     }
 }
 
@@ -113,22 +113,23 @@ fn query_history(deps: Deps) -> StdResult<Vec<String>> {
     Ok(out)
 }
 
-
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use cosmwasm_std::coins;
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-    use cosmwasm_std::{coins};
 
     #[test]
     fn proper_initialization() {
         let mut deps = mock_dependencies();
 
-        let msg = InstantiateMsg {nois_proxy: "address123".to_string(),};
+        let msg = InstantiateMsg {
+            nois_proxy: "address123".to_string(),
+        };
         let info = mock_info("creator", &coins(1000, "earth"));
 
         // we can just call .unwrap() to assert this was a success
         let res = instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
-        assert_eq!(0, res.messages.len());}
+        assert_eq!(0, res.messages.len());
+    }
 }
