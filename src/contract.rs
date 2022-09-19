@@ -60,12 +60,14 @@ pub fn execute_roll_dice(
     let nois_proxy = NOIS_PROXY.load(deps.storage)?;
     //Prevent a player from paying for an already existing randomness.
     //The actual immutability of the history comes in the execute_receive function
-    let mut response = match DOUBLE_DICE_OUTCOME.may_load(deps.storage, &job_id)? {
-        None => Response::default(),
-        Some(_randomness) => return Err(ContractError::JobIdAlreadyPresent),
-    };
+    if DOUBLE_DICE_OUTCOME
+        .may_load(deps.storage, &job_id)?
+        .is_some()
+    {
+        return Err(ContractError::JobIdAlreadyPresent);
+    }
 
-    response = Response::new().add_message(WasmMsg::Execute {
+    let response = Response::new().add_message(WasmMsg::Execute {
         contract_addr: nois_proxy.into(),
         //GetNextRandomness requests the randomness from the proxy
         //The job id is needed to know what randomness we are referring to upon reception in the callback
