@@ -1,5 +1,5 @@
 #[cfg(not(feature = "library"))]
-use cosmwasm_std::{entry_point, Order, ensure_eq,};
+use cosmwasm_std::{ensure_eq, entry_point, Order};
 use cosmwasm_std::{
     to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, WasmMsg,
 };
@@ -60,18 +60,17 @@ pub fn execute_roll_dice(
     let nois_proxy = NOIS_PROXY.load(deps.storage)?;
     //Prevent a player from paying for an already existing randomness.
     //The actual immutability of the history comes in the execute_receive function
-    let mut response = match  DOUBLE_DICE_OUTCOME.may_load(deps.storage, &job_id)?{
+    let mut response = match DOUBLE_DICE_OUTCOME.may_load(deps.storage, &job_id)? {
         None => Response::default(),
         Some(_randomness) => return Err(ContractError::JobIdAlreadyPresent),
     };
 
     response = Response::new().add_message(WasmMsg::Execute {
-
         contract_addr: nois_proxy.into(),
         //GetNextRandomness requests the randomness from the proxy
         //The job id is needed to know what randomness we are referring to upon reception in the callback
         //In this example, the job_id represents one round of dice rolling.
-        msg: to_binary(&ProxyExecuteMsg::GetNextRandomness {job_id})?,
+        msg: to_binary(&ProxyExecuteMsg::GetNextRandomness { job_id })?,
         //For now the randomness is for free. You don't need to send any funds to request randomness
         funds: vec![],
     });
@@ -91,7 +90,8 @@ pub fn execute_receive(
     //callback should only be allowed to be called by the proxy contract
     //otherwise anyone can cut the randomness workflow and cheat the randomness by sending the randomness directly to this contract
     ensure_eq!(info.sender, proxy, ContractError::UnauthorizedReceive);
-    let randomness: [u8; 32] = callback.randomness
+    let randomness: [u8; 32] = callback
+        .randomness
         .to_array()
         .map_err(|_| ContractError::InvalidRandomness)?;
     //ints_in_range provides a list of random numbers following a uniform distribution within a range.
@@ -99,15 +99,15 @@ pub fn execute_receive(
     let [dice_outcome_1, dice_outcome_2] = ints_in_range(randomness, 1..=6);
     //summing the dice to fit the real double dice probability distribution from 2 to 12
     let double_dice_outcome = dice_outcome_1 + dice_outcome_2;
-    
+
     //Preserve the immutability of the previous rounds.
     //So that the player cannot retry and change history.
-    let response = match  DOUBLE_DICE_OUTCOME.may_load(deps.storage, &callback.job_id)?{
+    let response = match DOUBLE_DICE_OUTCOME.may_load(deps.storage, &callback.job_id)? {
         None => Response::default(),
-        Some(_randomness) => return Err( ContractError::JobIdAlreadyPresent),
+        Some(_randomness) => return Err(ContractError::JobIdAlreadyPresent),
     };
     DOUBLE_DICE_OUTCOME.save(deps.storage, &callback.job_id, &double_dice_outcome)?;
-    
+
     Ok(response)
 }
 
@@ -138,7 +138,9 @@ fn query_history(deps: Deps) -> StdResult<Vec<String>> {
 mod tests {
     use super::*;
     use cosmwasm_std::coins;
-    use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info, MockStorage, MockApi, MockQuerier};
+    use cosmwasm_std::testing::{
+        mock_dependencies, mock_env, mock_info, MockApi, MockQuerier, MockStorage,
+    };
     use cosmwasm_std::{Empty, OwnedDeps};
     use nois::HexBinary;
 
@@ -159,7 +161,6 @@ mod tests {
         assert_eq!(0, res.messages.len());
     }
 
-
     fn instantiate_proxy() -> OwnedDeps<MockStorage, MockApi, MockQuerier, Empty> {
         let mut deps = mock_dependencies();
         let msg = InstantiateMsg {
@@ -169,8 +170,6 @@ mod tests {
         instantiate(deps.as_mut(), mock_env(), info, msg).unwrap();
         deps
     }
-
-    
 
     #[test]
     fn execute_roll_dice_works() {
@@ -222,10 +221,7 @@ mod tests {
         let msg = ExecuteMsg::Receive {
             callback: NoisCallback {
                 job_id: "round_1".to_string(),
-                randomness: HexBinary::from_hex(
-                    "ffffffff",
-                )
-                .unwrap(),
+                randomness: HexBinary::from_hex("ffffffff").unwrap(),
             },
         };
         let info = mock_info(PROXY_ADDRESS, &[]);

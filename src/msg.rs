@@ -12,10 +12,10 @@ pub struct InstantiateMsg {
 #[serde(rename_all = "snake_case")]
 pub enum ExecuteMsg {
     // job_id for this job which allows for gathering the results.
-    RollDice {job_id: String},
+    RollDice { job_id: String },
     //callback contains the randomness from drand (HexBinary) and job_id
-    //callback should only be allowed to be called by the proxy contract 
-    Receive{ callback: NoisCallback}, 
+    //callback should only be allowed to be called by the proxy contract
+    Receive { callback: NoisCallback },
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
