@@ -12,6 +12,14 @@ pub enum ContractError {
     #[error("Proxy address is not valid")]
     InvalidProxyAddress,
 
+    #[error("Round already present")]
+    JobIdAlreadyPresent,
+
+    //callback should only be allowed to be called by the proxy contract
+    //otherwise anyone can cut the randomness workflow and cheat the randomness
+    #[error("Unauthorized Receive execution")]
+    UnauthorizedReceive,
+
     #[error("Received invalid randomness")]
     InvalidRandomness,
 }
